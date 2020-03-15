@@ -1,0 +1,59 @@
+version: '3'
+services:
+    visualizador:
+        image: dockersamples/visualizer
+        volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        ports:
+            - 8081:8080
+        deploy:
+            placement:
+                constraints:
+                    - node.role == manager
+    database:
+        image: mysql
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: on-failure        
+                max_attempts: 3
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: fj27_spring
+            MYSQL_USER: caelum
+            MYSQL_PASSWORD: caelum
+        ports:
+            - 3306:3306
+        networks:
+            - net
+            
+    springApp:
+        image: dribeirodocker/springapplicationv2
+        deploy:
+            replicas: 3
+            restart_policy:
+                condition: any        
+                max_attempts: 5
+        ports:
+            - 8080:8080
+        networks: 
+            - net
+        depends_on:
+            - database
+            
+    angApp:
+        image: dribeirodocker/angappv2
+        deploy:
+            replicas: 2
+            restart_policy:
+                condition: any        
+                max_attempts: 5
+        ports:
+            - 80:80
+        networks:
+            - net
+        depends_on:
+            - springApp
+networks:
+    net:
+        external: true

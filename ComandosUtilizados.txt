@@ -1,0 +1,22 @@
+Abaixo uma lista de comandos utilizados durante o projeto:
+
+::Verifica se a rede existe
+docker network ls
+
+::Cria a rede (caso ela não exista)
+docker network create -d overlay net
+
+::Faz o deploy
+docker stack deploy -c docker-compose.yml microservico_replica
+
+::Verifica o deploy
+docker stack ls
+
+::Verifica o status dos serviços
+docker service ls
+
+::Solicita 4 replicas do serviço de frontend
+docker service scale microservico_replica_angApp=4
+
+::Finaliza a execução do deploy
+docker stack rm microservico_replica
